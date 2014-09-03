@@ -1,4 +1,4 @@
-# Copyright (C) 2013 Google Inc.
+# Copyright (C) 2014 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import argparse
 import httplib2
 import os
 
-from apiclient import discovery
+from googleapiclient import discovery
 from oauth2client import client
 from oauth2client import file
 from oauth2client import tools

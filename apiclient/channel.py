@@ -59,7 +59,7 @@ Example of unsubscribing.
 import datetime
 import uuid
 
-from apiclient import errors
+from googleapiclient import errors
 from oauth2client import util
 
 

@@ -1,4 +1,4 @@
-# Copyright (C) 2012 Google Inc.
+# Copyright (C) 2014 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import base64
 import copy
 import gzip
 import httplib2
+import json
 import logging
 import mimeparse
 import mimetypes
@@ -49,7 +50,6 @@ from errors import UnexpectedBodyError
 from errors import UnexpectedMethodError
 from model import JsonModel
 from oauth2client import util
-from oauth2client.anyjson import simplejson
 
 
 DEFAULT_CHUNK_SIZE = 512*1024
@@ -221,7 +221,7 @@ class MediaUpload(object):
         del d[member]
     d['_class'] = t.__name__
     d['_module'] = t.__module__
-    return simplejson.dumps(d)
+    return json.dumps(d)
 
   def to_json(self):
     """Create a JSON representation of an instance of MediaUpload.
@@ -244,7 +244,7 @@ class MediaUpload(object):
       An instance of the subclass of MediaUpload that was serialized with
       to_json().
     """
-    data = simplejson.loads(s)
+    data = json.loads(s)
     # Find and call the right classmethod from_json() to restore the object.
     module = data['_module']
     m = __import__(module, fromlist=module.split('.')[:-1])
@@ -436,7 +436,7 @@ class MediaFileUpload(MediaIoBaseUpload):
 
   @staticmethod
   def from_json(s):
-    d = simplejson.loads(s)
+    d = json.loads(s)
     return MediaFileUpload(d['_filename'], mimetype=d['_mimetype'],
                            chunksize=d['_chunksize'], resumable=d['_resumable'])
 
@@ -497,7 +497,7 @@ class MediaIoBaseDownload(object):
     Args:
       fd: io.Base or file object, The stream in which to write the downloaded
         bytes.
-      request: apiclient.http.HttpRequest, the media request to perform in
+      request: googleapiclient.http.HttpRequest, the media request to perform in
         chunks.
       chunksize: int, File will be downloaded in chunks of this many bytes.
     """
@@ -529,7 +529,7 @@ class MediaIoBaseDownload(object):
          downloaded.
 
     Raises:
-      apiclient.errors.HttpError if the response was not a 2xx.
+      googleapiclient.errors.HttpError if the response was not a 2xx.
       httplib2.HttpLib2Error if a transport error has occured.
     """
     headers = {
@@ -676,7 +676,7 @@ class HttpRequest(object):
       by the postproc.
 
     Raises:
-      apiclient.errors.HttpError if the response was not a 2xx.
+      googleapiclient.errors.HttpError if the response was not a 2xx.
       httplib2.HttpLib2Error if a transport error has occured.
     """
     if http is None:
@@ -771,7 +771,7 @@ class HttpRequest(object):
          The body will be None until the resumable media is fully uploaded.
 
     Raises:
-      apiclient.errors.HttpError if the response was not a 2xx.
+      googleapiclient.errors.HttpError if the response was not a 2xx.
       httplib2.HttpLib2Error if a transport error has occured.
     """
     if http is None:
@@ -885,7 +885,7 @@ class HttpRequest(object):
          The body will be None until the resumable media is fully uploaded.
 
     Raises:
-      apiclient.errors.HttpError if the response was not a 2xx or a 308.
+      googleapiclient.errors.HttpError if the response was not a 2xx or a 308.
     """
     if resp.status in [200, 201]:
       self._in_error_state = False
@@ -913,12 +913,12 @@ class HttpRequest(object):
     del d['_sleep']
     del d['_rand']
 
-    return simplejson.dumps(d)
+    return json.dumps(d)
 
   @staticmethod
   def from_json(s, http, postproc):
     """Returns an HttpRequest populated with info from a JSON object."""
-    d = simplejson.loads(s)
+    d = json.loads(s)
     if d['resumable'] is not None:
       d['resumable'] = MediaUpload.new_from_json(d['resumable'])
     return HttpRequest(
@@ -936,7 +936,7 @@ class BatchHttpRequest(object):
   """Batches multiple HttpRequest objects into a single HTTP request.
 
   Example:
-    from apiclient.http import BatchHttpRequest
+    from googleapiclient.http import BatchHttpRequest
 
     def list_animals(request_id, response, exception):
       \"\"\"Do something with the animals list response.\"\"\"
@@ -973,7 +973,7 @@ class BatchHttpRequest(object):
       callback: callable, A callback to be called for each response, of the
         form callback(id, response, exception). The first parameter is the
         request id, and the second is the deserialized response object. The
-        third is an apiclient.errors.HttpError exception object if an HTTP error
+        third is an googleapiclient.errors.HttpError exception object if an HTTP error
         occurred while processing the request, or None if no error occurred.
       batch_uri: string, URI to send batch requests to.
     """
@@ -1178,7 +1178,7 @@ class BatchHttpRequest(object):
       callback: callable, A callback to be called for this response, of the
         form callback(id, response, exception). The first parameter is the
         request id, and the second is the deserialized response object. The
-        third is an apiclient.errors.HttpError exception object if an HTTP error
+        third is an googleapiclient.errors.HttpError exception object if an HTTP error
         occurred while processing the request, or None if no errors occurred.
       request_id: string, A unique id for the request. The id will be passed to
         the callback with the response.
@@ -1211,7 +1211,7 @@ class BatchHttpRequest(object):
 
     Raises:
       httplib2.HttpLib2Error if a transport error has occured.
-      apiclient.errors.BatchError if the response is the wrong format.
+      googleapiclient.errors.BatchError if the response is the wrong format.
     """
     message = MIMEMultipart('mixed')
     # Message should not write out it's own headers.
@@ -1229,7 +1229,12 @@ class BatchHttpRequest(object):
       msg.set_payload(body)
       message.attach(msg)
 
-    body = message.as_string()
+    # encode the body: note that we can't use `as_string`, because
+    # it plays games with `From ` lines.
+    fp = StringIO.StringIO()
+    g = Generator(fp, mangle_from_=False)
+    g.flatten(message, unixfrom=False)
+    body = fp.getvalue()
 
     headers = {}
     headers['content-type'] = ('multipart/mixed; '
@@ -1275,7 +1280,7 @@ class BatchHttpRequest(object):
 
     Raises:
       httplib2.HttpLib2Error if a transport error has occured.
-      apiclient.errors.BatchError if the response is the wrong format.
+      googleapiclient.errors.BatchError if the response is the wrong format.
     """
 
     # If http is not supplied use the first valid one given in the requests.
@@ -1381,7 +1386,7 @@ class RequestMockBuilder(object):
           'plus.activities.get': (None, response),
         }
       )
-      apiclient.discovery.build("plus", "v1", requestBuilder=requestBuilder)
+      googleapiclient.discovery.build("plus", "v1", requestBuilder=requestBuilder)
 
     Methods that you do not supply a response for will return a
     200 OK with an empty string as the response content or raise an excpetion
@@ -1425,8 +1430,8 @@ class RequestMockBuilder(object):
           # or expecting a body and not provided one.
           raise UnexpectedBodyError(expected_body, body)
         if isinstance(expected_body, str):
-          expected_body = simplejson.loads(expected_body)
-        body = simplejson.loads(body)
+          expected_body = json.loads(expected_body)
+        body = json.loads(body)
         if body != expected_body:
           raise UnexpectedBodyError(expected_body, body)
       return HttpRequestMock(resp, content, postproc)
@@ -1517,7 +1522,7 @@ class HttpMockSequence(object):
     if content == 'echo_request_headers':
       content = headers
     elif content == 'echo_request_headers_as_json':
-      content = simplejson.dumps(headers)
+      content = json.dumps(headers)
     elif content == 'echo_request_body':
       if hasattr(body, 'read'):
         content = body.read()
