@@ -146,7 +146,6 @@ def googleSearch(userId, startTimeParam, startDate, endTime, endDate):
 
   except client.AccessTokenRefreshError:
     pass
-    #print ("The credentials have been revoked or expired, please re-run the application to re-authorize")
 
   return events
 
