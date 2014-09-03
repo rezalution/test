@@ -176,5 +176,6 @@ class MainHandler(webapp2.RequestHandler):
 
   googleSearch(userId, startTimeParam, startDate, endTime, endDate)
   
- app = webapp2.WSGIApplication(
-	[('/', MainHandler)], debug=True)
+application = webapp2.WSGIApplication(
+	[('/', MainHandler)], 
+	debug=True)
