@@ -4,7 +4,7 @@ import httplib2
 import os
 import sys
 import json
-import gflags
+from gflags import gflags
 #sys.path.remove('/usr/lib/python2.6/site-packages')
 #foo = imp.load_source('argparse.py', '/usr/lib/python2.6/site-packages/')
 import argparse
