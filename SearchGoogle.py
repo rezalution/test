@@ -5,6 +5,7 @@ import os
 import sys
 import json
 import gflags
+import googleInit
 #sys.path.remove('/usr/lib/python2.6/site-packages')
 #foo = imp.load_source('argparse.py', '/usr/lib/python2.6/site-packages/')
 import argparse
@@ -26,38 +27,6 @@ FLAGS = gflags.FLAGS
 BusyBlock = namedtuple("BusyBlock", "year, month, day, startTime endTime")
 
 CLIENT_SECRETS = os.path.join(os.path.dirname(__file__), 'client_secrets.json')
-
-FLOW = OAuth2WebServerFlow(
-    client_id='867412132283-vk6grnslsq7uq3gsafe21v7f00blca5s.apps.googleusercontent.com',
-    client_secret='01JZVBwcrmbJexziXRC-XS8S',
-    scope='https://www.googleapis.com/auth/calendar',
-    user_agent='folkloric-alpha-692/1')
-	
-FLAGS.auth_local_webserver = False
-
-  #used from the google reference code
-storage = Storage('calendar.dat')
-credentials = storage.get()
-if credentials is None or credentials.invalid == True:
-    credentials = run(FLOW, storage)
-
-  #if credentials is None or credentials.invalid:
-   #print credentials
-   #credentials = tools.run_flow(FLOW, storage)
-
-  # Create an httplib2.Http object to handle our HTTP requests and authorize it with our good Credentials.
-http = httplib2.Http()
-http = credentials.authorize(http)
-
-  # Construct the service object for the interacting with the Calendar API.
-service = discovery.build('calendar', 'v3', http=http, developerKey='AIzaSyCc4hQRQIGTy5jIgF0ca4E1HafAKqO2CYQ')
-
-#FLOW = client.flow_from_clientsecrets(CLIENT_SECRETS,
-  #scope=[
-     # 'https://www.googleapis.com/auth/calendar',
-     # 'https://www.googleapis.com/auth/calendar.readonly',
-   # ],
-    #message=tools.message_if_missing(CLIENT_SECRETS))
 
 #def googleSearch(userId, startYear, endYear, startMonth, endMonth, startday, endDay, startTime, endTime):
 def googleSearch(userId, startTimeParam, startDate, endTime, endDate):
