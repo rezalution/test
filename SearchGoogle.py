@@ -181,4 +181,3 @@ class MainHandler(webapp2.RequestHandler)
 	('/', MainHandler)
 	#('/google', googleSearch)
 ], debug=True)
- 
