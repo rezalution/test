@@ -24,21 +24,31 @@ BusyBlock = namedtuple("BusyBlock", "year, month, day, startTime endTime")
 
 CLIENT_SECRETS = os.path.join(os.path.dirname(__file__), 'client_secrets.json')
 
-FLOW = client.flow_from_clientsecrets(CLIENT_SECRETS,
-  scope=[
-      'https://www.googleapis.com/auth/calendar',
-      'https://www.googleapis.com/auth/calendar.readonly',
-    ],
-    message=tools.message_if_missing(CLIENT_SECRETS))
+FLOW = OAuth2WebServerFlow(
+    client_id='867412132283-vk6grnslsq7uq3gsafe21v7f00blca5s.apps.googleusercontent.com',
+    client_secret='01JZVBwcrmbJexziXRC-XS8S',
+    scope='https://www.googleapis.com/auth/calendar',
+    user_agent='folkloric-alpha-692/1')
+
+
+#FLOW = client.flow_from_clientsecrets(CLIENT_SECRETS,
+  #scope=[
+     # 'https://www.googleapis.com/auth/calendar',
+     # 'https://www.googleapis.com/auth/calendar.readonly',
+   # ],
+    #message=tools.message_if_missing(CLIENT_SECRETS))
 
 #def googleSearch(userId, startYear, endYear, startMonth, endMonth, startday, endDay, startTime, endTime):
 def googleSearch(userId, startTimeParam, startDate, endTime, endDate):
   #used from the google reference code
   storage = file.Storage('sample.dat')
   credentials = storage.get()
-  if credentials is None or credentials.invalid:
-    print credentials
-    credentials = tools.run_flow(FLOW, storage, flags)
+  if credentials is None or credentials.invalid == True:
+    credentials = run(FLOW, storage)
+
+  #if credentials is None or credentials.invalid:
+   # print credentials
+   # credentials = tools.run_flow(FLOW, storage, flags)
 
   # Create an httplib2.Http object to handle our HTTP requests and authorize it with our good Credentials.
   http = httplib2.Http()
