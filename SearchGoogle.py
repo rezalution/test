@@ -28,7 +28,6 @@ FLOW = OAuth2WebServerFlow(
     scope='https://www.googleapis.com/auth/calendar',
     user_agent='folkloric-alpha-692/1')
 
-
 #FLOW = client.flow_from_clientsecrets(CLIENT_SECRETS,
   #scope=[
      # 'https://www.googleapis.com/auth/calendar',
