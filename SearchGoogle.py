@@ -11,7 +11,6 @@ import argparse
 from datetime import datetime
 from collections import namedtuple
 #import tzlocal
-#import pytz
 
 from apiclient import discovery
 #from apiclient.discovery import build
