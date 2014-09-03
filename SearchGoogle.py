@@ -42,7 +42,7 @@ FLOW = OAuth2WebServerFlow(
 #def googleSearch(userId, startYear, endYear, startMonth, endMonth, startday, endDay, startTime, endTime):
 def googleSearch(userId, startTimeParam, startDate, endTime, endDate):
   #used from the google reference code
-  storage = file.Storage('sample.dat')
+  storage = Storage('calendar.dat')
   credentials = storage.get()
   if credentials is None or credentials.invalid == True:
     credentials = run(FLOW, storage)
