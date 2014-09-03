@@ -47,12 +47,12 @@ def googleSearch(userId, startTimeParam, startDate, endTime, endDate):
   #used from the google reference code
   storage = Storage('calendar.dat')
   credentials = storage.get()
-  #if credentials is None or credentials.invalid == True:
-    #credentials = run(FLOW, storage)
+  if credentials is None or credentials.invalid == True:
+    credentials = run(FLOW, storage)
 
-  if credentials is None or credentials.invalid:
-   print credentials
-   credentials = tools.run_flow(FLOW, storage)
+  #if credentials is None or credentials.invalid:
+   #print credentials
+   #credentials = tools.run_flow(FLOW, storage)
 
   # Create an httplib2.Http object to handle our HTTP requests and authorize it with our good Credentials.
   http = httplib2.Http()
