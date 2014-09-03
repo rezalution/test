@@ -4,7 +4,7 @@ import httplib2
 import os
 import sys
 import json
-from gflags import gflags
+#import gflags
 #sys.path.remove('/usr/lib/python2.6/site-packages')
 #foo = imp.load_source('argparse.py', '/usr/lib/python2.6/site-packages/')
 import argparse
@@ -20,7 +20,7 @@ from oauth2client import tools
 from oauth2client.client import OAuth2WebServerFlow
 from oauth2client.tools import run
 
-FLAGS = gflags.FLAGS
+#FLAGS = gflags.FLAGS
 
 BusyBlock = namedtuple("BusyBlock", "year, month, day, startTime endTime")
 
@@ -45,7 +45,7 @@ def googleSearch(userId, startTimeParam, startDate, endTime, endDate):
   storage = file.Storage('sample.dat')
   credentials = storage.get()
   if credentials is None or credentials.invalid == True:
-    credentials = run(FLOW, storage)
+    #credentials = run(FLOW, storage)
 
   #if credentials is None or credentials.invalid:
    # print credentials
