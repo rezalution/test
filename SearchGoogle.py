@@ -5,7 +5,6 @@ import os
 import sys
 import json
 import gflags
-import googleInit
 #sys.path.remove('/usr/lib/python2.6/site-packages')
 #foo = imp.load_source('argparse.py', '/usr/lib/python2.6/site-packages/')
 import argparse
@@ -27,6 +26,22 @@ FLAGS = gflags.FLAGS
 BusyBlock = namedtuple("BusyBlock", "year, month, day, startTime endTime")
 
 CLIENT_SECRETS = os.path.join(os.path.dirname(__file__), 'client_secrets.json')
+
+def __init__(self):
+	self._service = None
+	self.init_service()
+def init_service(self):
+	if self._service:
+		return
+	storage = Storage('credentials.dat')
+	credentials = storage.get()
+	if not credentials or credentials.invalid:
+		parser = tools.argparser
+		flags = parser.parse_args([])
+	credentials = run_flow(flow, storage, flags)
+	http = httplib2.Http()
+	http = credentials.authorize(http)
+	self._service = build('calendar', 'v3', http=http)
 
 #def googleSearch(userId, startYear, endYear, startMonth, endMonth, startday, endDay, startTime, endTime):
 def googleSearch(userId, startTimeParam, startDate, endTime, endDate):
