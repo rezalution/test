@@ -57,7 +57,7 @@ def googleSearch(userId, startTimeParam, startDate, endTime, endDate):
   http = credentials.authorize(http)
 
   # Construct the service object for the interacting with the Calendar API.
-  service = discovery.build('calendar', 'v3', http=http)
+  service = discovery.build('calendar', 'v3', http=http, developerKey='AIzaSyCc4hQRQIGTy5jIgF0ca4E1HafAKqO2CYQ')
 
   try:
 
