@@ -52,7 +52,7 @@ def googleSearch(userId, startTimeParam, startDate, endTime, endDate):
 
   if credentials is None or credentials.invalid:
    print credentials
-   credentials = tools.run_flow(FLOW, storage, flags)
+   credentials = tools.run_flow(FLOW, storage)
 
   # Create an httplib2.Http object to handle our HTTP requests and authorize it with our good Credentials.
   http = httplib2.Http()
