@@ -36,7 +36,7 @@ def googleSearch(userId, startTimeParam, startDate, endTime, endDate):
   storage = file.Storage('sample.dat')
   credentials = storage.get()
   if credentials is None or credentials.invalid:
-    ##print credentials
+    print credentials
     credentials = tools.run_flow(FLOW, storage, flags)
 
   # Create an httplib2.Http object to handle our HTTP requests and authorize it with our good Credentials.
