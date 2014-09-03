@@ -32,6 +32,11 @@ FLOW = OAuth2WebServerFlow(
     client_secret='01JZVBwcrmbJexziXRC-XS8S',
     scope='https://www.googleapis.com/auth/calendar',
     user_agent='folkloric-alpha-692/1')
+	
+storage = Storage('calendar.dat')
+credentials = storage.get()
+if credentials is None or credentials.invalid == True:
+    credentials = run(FLOW, storage)
 
 #FLOW = client.flow_from_clientsecrets(CLIENT_SECRETS,
   #scope=[
@@ -43,10 +48,10 @@ FLOW = OAuth2WebServerFlow(
 #def googleSearch(userId, startYear, endYear, startMonth, endMonth, startday, endDay, startTime, endTime):
 def googleSearch(userId, startTimeParam, startDate, endTime, endDate):
   #used from the google reference code
-  storage = Storage('calendar.dat')
-  credentials = storage.get()
-  if credentials is None or credentials.invalid == True:
-    credentials = run(FLOW, storage)
+  #storage = Storage('calendar.dat')
+  #credentials = storage.get()
+  #if credentials is None or credentials.invalid == True:
+    #credentials = run(FLOW, storage)
 
   #if credentials is None or credentials.invalid:
    # print credentials
