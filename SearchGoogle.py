@@ -179,7 +179,7 @@ class MainHandler(webapp2.RequestHandler)
   googleSearch(userId, startTimeParam, startDate, endTime, endDate)
   
  app = webapp2.WSGIApplication([
-	('/', MainHandler),
+	('/', MainHandler)
 	#('/google', googleSearch)
 ], debug=True)
  
