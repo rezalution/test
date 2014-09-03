@@ -168,6 +168,8 @@ class MainHandler(webapp2.RequestHandler):
   endDate = endYear + "-" + endMonth + "-" + endDay
   endDate = str(endDate)
 
+  __init__(self)
+  init_service(self)
   googleSearch(userId, startTimeParam, startDate, endTime, endDate)
   
 application = webapp2.WSGIApplication(
