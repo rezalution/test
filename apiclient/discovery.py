@@ -1,4 +1,4 @@
-# Copyright (C) 2014 Google Inc.
+# Copyright (C) 2010 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -27,12 +27,9 @@ __all__ = [
 
 
 # Standard library imports
-import StringIO
 import copy
-from email.generator import Generator
 from email.mime.multipart import MIMEMultipart
 from email.mime.nonmultipart import MIMENonMultipart
-import json
 import keyword
 import logging
 import mimetypes
@@ -52,20 +49,20 @@ import mimeparse
 import uritemplate
 
 # Local imports
-from googleapiclient.errors import HttpError
-from googleapiclient.errors import InvalidJsonError
-from googleapiclient.errors import MediaUploadSizeError
-from googleapiclient.errors import UnacceptableMimeTypeError
-from googleapiclient.errors import UnknownApiNameOrVersion
-from googleapiclient.errors import UnknownFileType
-from googleapiclient.http import HttpRequest
-from googleapiclient.http import MediaFileUpload
-from googleapiclient.http import MediaUpload
-from googleapiclient.model import JsonModel
-from googleapiclient.model import MediaModel
-from googleapiclient.model import RawModel
-from googleapiclient.schema import Schemas
-from oauth2client.client import GoogleCredentials
+from apiclient.errors import HttpError
+from apiclient.errors import InvalidJsonError
+from apiclient.errors import MediaUploadSizeError
+from apiclient.errors import UnacceptableMimeTypeError
+from apiclient.errors import UnknownApiNameOrVersion
+from apiclient.errors import UnknownFileType
+from apiclient.http import HttpRequest
+from apiclient.http import MediaFileUpload
+from apiclient.http import MediaUpload
+from apiclient.model import JsonModel
+from apiclient.model import MediaModel
+from apiclient.model import RawModel
+from apiclient.schema import Schemas
+from oauth2client.anyjson import simplejson
 from oauth2client.util import _add_query_parameter
 from oauth2client.util import positional
 
@@ -149,8 +146,7 @@ def build(serviceName,
           discoveryServiceUrl=DISCOVERY_URI,
           developerKey=None,
           model=None,
-          requestBuilder=HttpRequest,
-          credentials=None):
+          requestBuilder=HttpRequest):
   """Construct a Resource for interacting with an API.
 
   Construct a Resource object for interacting with an API. The serviceName and
@@ -167,11 +163,9 @@ def build(serviceName,
       document for that service.
     developerKey: string, key obtained from
       https://code.google.com/apis/console.
-    model: googleapiclient.Model, converts to and from the wire format.
-    requestBuilder: googleapiclient.http.HttpRequest, encapsulator for an HTTP
+    model: apiclient.Model, converts to and from the wire format.
+    requestBuilder: apiclient.http.HttpRequest, encapsulator for an HTTP
       request.
-    credentials: oauth2client.Credentials, credentials to be used for
-      authentication.
 
   Returns:
     A Resource object with methods for interacting with the service.
@@ -193,7 +187,7 @@ def build(serviceName,
   if 'REMOTE_ADDR' in os.environ:
     requested_url = _add_query_parameter(requested_url, 'userIp',
                                          os.environ['REMOTE_ADDR'])
-  logger.info('URL being requested: GET %s' % requested_url)
+  logger.info('URL being requested: %s' % requested_url)
 
   resp, content = http.request(requested_url)
 
@@ -204,14 +198,13 @@ def build(serviceName,
     raise HttpError(resp, content, uri=requested_url)
 
   try:
-    service = json.loads(content)
+    service = simplejson.loads(content)
   except ValueError, e:
     logger.error('Failed to parse as JSON: ' + content)
     raise InvalidJsonError()
 
   return build_from_document(content, base=discoveryServiceUrl, http=http,
-      developerKey=developerKey, model=model, requestBuilder=requestBuilder,
-      credentials=credentials)
+      developerKey=developerKey, model=model, requestBuilder=requestBuilder)
 
 
 @positional(1)
@@ -222,8 +215,7 @@ def build_from_document(
     http=None,
     developerKey=None,
     model=None,
-    requestBuilder=HttpRequest,
-    credentials=None):
+    requestBuilder=HttpRequest):
   """Create a Resource for interacting with an API.
 
   Same as `build()`, but constructs the Resource object from a discovery
@@ -244,7 +236,6 @@ def build_from_document(
     model: Model class instance that serializes and de-serializes requests and
       responses.
     requestBuilder: Takes an http request and packages it up to be executed.
-    credentials: object, credentials to be used for authentication.
 
   Returns:
     A Resource object with methods for interacting with the service.
@@ -254,31 +245,9 @@ def build_from_document(
   future = {}
 
   if isinstance(service, basestring):
-    service = json.loads(service)
+    service = simplejson.loads(service)
   base = urlparse.urljoin(service['rootUrl'], service['servicePath'])
   schema = Schemas(service)
-
-  if credentials:
-    # If credentials were passed in, we could have two cases:
-    # 1. the scopes were specified, in which case the given credentials
-    #    are used for authorizing the http;
-    # 2. the scopes were not provided (meaning the Application Default
-    #    Credentials are to be used). In this case, the Application Default
-    #    Credentials are built and used instead of the original credentials.
-    #    If there are no scopes found (meaning the given service requires no
-    #    authentication), there is no authorization of the http.
-    if (isinstance(credentials, GoogleCredentials) and
-        credentials.create_scoped_required()):
-      scopes = service.get('auth', {}).get('oauth2', {}).get('scopes', {})
-      if scopes:
-        credentials = credentials.create_scoped(scopes.keys())
-      else:
-        # No need to authorize the http object
-        # if the service does not require authentication.
-        credentials = None
-
-    if credentials:
-      http = credentials.authorize(http)
 
   if model is None:
     features = service.get('features', [])
@@ -730,19 +699,14 @@ def createMethod(methodName, methodDesc, rootDesc, schema):
           payload = media_upload.getbytes(0, media_upload.size())
           msg.set_payload(payload)
           msgRoot.attach(msg)
-          # encode the body: note that we can't use `as_string`, because
-          # it plays games with `From ` lines.
-          fp = StringIO.StringIO()
-          g = Generator(fp, mangle_from_=False)
-          g.flatten(msgRoot, unixfrom=False)
-          body = fp.getvalue()
+          body = msgRoot.as_string()
 
           multipart_boundary = msgRoot.get_boundary()
           headers['content-type'] = ('multipart/related; '
                                      'boundary="%s"') % multipart_boundary
           url = _add_query_parameter(url, 'uploadType', 'multipart')
 
-    logger.info('URL being requested: %s %s' % (httpMethod,url))
+    logger.info('URL being requested: %s' % url)
     return self._requestBuilder(self._http,
                                 model.response,
                                 url,
@@ -850,7 +814,7 @@ Returns:
 
     request.uri = uri
 
-    logger.info('URL being requested: %s %s' % (methodName,uri))
+    logger.info('URL being requested: %s' % uri)
 
     return request
 
@@ -868,9 +832,9 @@ class Resource(object):
       http: httplib2.Http, Object to make http requests with.
       baseUrl: string, base URL for the API. All requests are relative to this
           URI.
-      model: googleapiclient.Model, converts to and from the wire format.
+      model: apiclient.Model, converts to and from the wire format.
       requestBuilder: class or callable that instantiates an
-          googleapiclient.HttpRequest object.
+          apiclient.HttpRequest object.
       developerKey: string, key obtained from
           https://code.google.com/apis/console
       resourceDesc: object, section of deserialized discovery document that
