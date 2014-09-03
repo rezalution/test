@@ -70,7 +70,6 @@ def googleSearch(userId, startTimeParam, startDate, endTime, endDate):
 
       startTime = "startTime"
 
-	  #we run into an issue if the calendar id doesnt exist
       try:
 		#when we get the events
 		#order by the start time, have it all as single events, min and max time are our parameters we put in
