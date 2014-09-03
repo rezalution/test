@@ -35,6 +35,23 @@ FLOW = OAuth2WebServerFlow(
 	
 FLAGS.auth_local_webserver = False
 
+  #used from the google reference code
+storage = Storage('calendar.dat')
+credentials = storage.get()
+if credentials is None or credentials.invalid == True:
+    credentials = run(FLOW, storage)
+
+  #if credentials is None or credentials.invalid:
+   #print credentials
+   #credentials = tools.run_flow(FLOW, storage)
+
+  # Create an httplib2.Http object to handle our HTTP requests and authorize it with our good Credentials.
+http = httplib2.Http()
+http = credentials.authorize(http)
+
+  # Construct the service object for the interacting with the Calendar API.
+service = discovery.build('calendar', 'v3', http=http, developerKey='AIzaSyCc4hQRQIGTy5jIgF0ca4E1HafAKqO2CYQ')
+
 #FLOW = client.flow_from_clientsecrets(CLIENT_SECRETS,
   #scope=[
      # 'https://www.googleapis.com/auth/calendar',
@@ -44,22 +61,7 @@ FLAGS.auth_local_webserver = False
 
 #def googleSearch(userId, startYear, endYear, startMonth, endMonth, startday, endDay, startTime, endTime):
 def googleSearch(userId, startTimeParam, startDate, endTime, endDate):
-  #used from the google reference code
-  storage = Storage('calendar.dat')
-  credentials = storage.get()
-  if credentials is None or credentials.invalid == True:
-    credentials = run(FLOW, storage)
 
-  #if credentials is None or credentials.invalid:
-   #print credentials
-   #credentials = tools.run_flow(FLOW, storage)
-
-  # Create an httplib2.Http object to handle our HTTP requests and authorize it with our good Credentials.
-  http = httplib2.Http()
-  http = credentials.authorize(http)
-
-  # Construct the service object for the interacting with the Calendar API.
-  service = discovery.build('calendar', 'v3', http=http, developerKey='AIzaSyCc4hQRQIGTy5jIgF0ca4E1HafAKqO2CYQ')
 
   try:
 
