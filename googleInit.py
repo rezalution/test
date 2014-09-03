@@ -10,7 +10,7 @@ FLOW = OAuth2WebServerFlow(
 	client_id='867412132283-vk6grnslsq7uq3gsafe21v7f00blca5s.apps.googleusercontent.com',
 	client_secret='01JZVBwcrmbJexziXRC-XS8S',
 	scope='https://www.googleapis.com/auth/calendar',
-	user_agent='folkloric-alpha-692/1')
+	user_agent='folkloric-alpha-692')
 # create storage if offline
 storage = Storage('calendar.dat')
 credentials = storage.get()	
