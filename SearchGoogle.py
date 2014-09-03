@@ -150,8 +150,8 @@ def googleSearch(userId, startTimeParam, startDate, endTime, endDate):
 
   return events
 
-
-if __name__ == '__main__':
+#if __name__ == '__main__':
+class MainHandler(webapp2.RequestHandler)
   userId = "rezalution786"
 
   startYear = "2014"
@@ -177,3 +177,9 @@ if __name__ == '__main__':
   endDate = str(endDate)
 
   googleSearch(userId, startTimeParam, startDate, endTime, endDate)
+  
+  app = webapp2.WSGIApplication([
+	('/', MainHandler),
+	#('/google', googleSearch)
+], debug=True)
+ 
