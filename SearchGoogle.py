@@ -149,7 +149,7 @@ def googleSearch(userId, startTimeParam, startDate, endTime, endDate):
   return events
 
 #if __name__ == '__main__':
-class MainHandler(webapp2.RequestHandler)
+class MainHandler(webapp2.RequestHandler):
   userId = "rezalution786"
 
   startYear = "2014"
