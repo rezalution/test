@@ -19,6 +19,7 @@ from oauth2client import tools
 from oauth2client.client import OAuth2WebServerFlow
 from oauth2client.tools import run
 
+FLAGS = gflags.FLAGS
 
 BusyBlock = namedtuple("BusyBlock", "year, month, day, startTime endTime")
 
