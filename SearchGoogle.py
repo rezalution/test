@@ -4,27 +4,23 @@ import httplib2
 import os
 import sys
 import json
-import cloudstorage
-
+import gflags
 import argparse
 from datetime import datetime
 from collections import namedtuple
-#import tzlocal
-#import pytz
+
+#from apiclient import discovery
 from apiclient.discovery import build
+#from oauth2client import file
+#from oauth2client import client
+from oauth2client import tools
 from oauth2client.file import Storage
-from oauth2client import client
-from oauth2client.tools import run
-<<<<<<< HEAD
-<<<<<<< HEAD
-from oauth2client import client
-=======
 from oauth2client.client import OAuth2WebServerFlow
-import gflags
->>>>>>> origin/master
+from oauth2client.tools import run
+from oauth2client import client
 
+BusyBlock = namedtuple("BusyBlock", "year, month, day, startTime endTime")
 
-<<<<<<< HEAD
 # CLIENT_SECRETS = os.path.join(os.path.dirname(__file__), 'client_secrets.json')
 
 # FLOW = client.flow_from_clientsecrets(CLIENT_SECRETS,
@@ -33,25 +29,9 @@ import gflags
 #       'https://www.googleapis.com/auth/calendar.readonly',
 #     ],
 #     message=tools.message_if_missing(CLIENT_SECRETS))
-=======
-=======
-from oauth2client.client import OAuth2WebServerFlow
-import gflags
-
-
->>>>>>> origin/master
-BusyBlock = namedtuple("BusyBlock", "year, month, day, startTime endTime")
-
-# decorator = appengine.OAuth2DecoratorFromClientSecrets(
-#   'client_secrets.json',
-#   scope='https://www.googleapis.com/auth/calendar')
-# 
-FLAGS = gflags.FLAGS
->>>>>>> origin/master
 
 FLAGS = gflags.FLAGS
 FLOW = OAuth2WebServerFlow(
-<<<<<<< HEAD
     client_id='350349023880-2f831jg4i6m8ee5h9f7jp742cmqm8efc.apps.googleusercontent.com',
     client_secret='ZpguubUd9SEH9pkVvl-QPi8G',
      scope=[
@@ -81,30 +61,9 @@ def getCalendarEvents(userID, startYear, startMonth, startDay, endYear, endMonth
   endDate = str(endDate)
 
   return googleSearch(userID, startTimeParam, startDate, endTime, endDate)
-=======
-	client_id='867412132283-vk6grnslsq7uq3gsafe21v7f00blca5s.apps.googleusercontent.com',
-	client_secret='01JZVBwcrmbJexziXRC-XS8S',
-	scope=['https://www.googleapis.com/auth/calendar','https://www.googleapis.com/auth/calendar.readonly',],
-	user_agent='folkloric-alpha-692/1')
-# 	
-# FLAGS.auth_local_webserver = False	
-# 	
-# storage = Storage('calendar.dat')
-# credentials = storage.get()
-# if credentials is None or credentials.invalid == True:
-# 	credentials = run(FLOW, storage)
-# 	
-# http = httplib2.Http()
-# http = credentials.authorize(http)
-# 
-# service = build(serviceName='calendar', version='v3', http=http,
-# 	developerKey='AIzaSyCc4hQRQIGTy5jIgF0ca4E1HafAKqO2CYQ')	
 
-<<<<<<< HEAD
->>>>>>> origin/master
-
+#def googleSearch(userId, startYear, endYear, startMonth, endMonth, startday, endDay, startTime, endTime):
 def googleSearch(userId, startTimeParam, startDate, endTime, endDate):
-<<<<<<< HEAD
   #used from the google reference code
   storage = Storage('calendar.dat')
   credentials = storage.get()
@@ -121,22 +80,6 @@ def googleSearch(userId, startTimeParam, startDate, endTime, endDate):
 
   service = build(serviceName='calendar', version='v3',
        developerKey='AIzaSyCInh7DEEH7Zv2H-htNy7o9Z_7ktqkWY1Q')
-=======
-=======
-
-def googleSearch(userId, startTimeParam, startDate, endTime, endDate):
->>>>>>> origin/master
-  storage = Storage('calendar.dat')
-  credentials = storage.get()
-  if credentials is None or credentials.invalid == True:
-	pass
-	
-  service = build(serviceName='calendar', version='v3',
-    developerKey='AIzaSyCc4hQRQIGTy5jIgF0ca4E1HafAKqO2CYQ')		
-<<<<<<< HEAD
->>>>>>> origin/master
-=======
->>>>>>> origin/master
 
   try:
 
@@ -169,8 +112,6 @@ def googleSearch(userId, startTimeParam, startDate, endTime, endDate):
         #f=open(filePath, 'w')
       newData = json.dumps(events)
 
-<<<<<<< HEAD
-<<<<<<< HEAD
       #ld_writeDicts(events)
 
       #busyTimes = list()
@@ -178,32 +119,6 @@ def googleSearch(userId, startTimeParam, startDate, endTime, endDate):
 	  #json_data = json.loads(newData)
       #with json.loads(newData) as json_file:
       json_data = json.loads(newData)
-=======
-=======
->>>>>>> origin/master
-#       def ld_writeDicts(filePath,events):
-#         f=open(filePath, 'w')
-#         newData = json.dumps(events,indent=4)
-#         f.write(newData)
-#         f.close()
-# 
-#       ld_writeDicts('/bucket/resultsjson/results.json', events)
-# 
-#         busyTimes = list()
-# 
-#       with open("/bucket/resultsjson/results.json") as json_file:
-#         json_data = json.load(json_file)
-
-
-      path = '/bucket/resultsjson/results.json'
-      filename = '/bucket/resultsjson/results.json'
-		
-      f = cloudstorage.open(filename, read_buffer_size=1)
-      json_data = f.read()
-<<<<<<< HEAD
->>>>>>> origin/master
-=======
->>>>>>> origin/master
 
       i = -1
       for items in json_data['items']:
@@ -261,59 +176,36 @@ def googleSearch(userId, startTimeParam, startDate, endTime, endDate):
     #print ("The credentials have been revoked or expired, please re-run the application to re-authorize")
 
   return events
-<<<<<<< HEAD
   
   
 class MainHandler(webapp2.RequestHandler):
  
   def get(self): 
 	  userId = "rezalution786"
-=======
 
-#if __name__ == '__main__':
-<<<<<<< HEAD
+	  startYear = "2014"
+	  startMonth = "08"
+	  startDay =  "30"
+	  startDate = startYear + "-" + startMonth + "-" + startDay
+	  startDate = str(startDate)
 
-class MainHandler(webapp2.RequestHandler):
+	  startHour = "00"
+	  startMin =  "00"
+	  startTimeParam = startHour + ":" + startMin
+	  startTimeParam = str(startTimeParam)
 
-		userId = "rezalution786"
->>>>>>> origin/master
+	  endHour = "00"
+	  endMin = "00"
+	  endTime = endHour + ":" + endMin
+	  endTime = str(endTime)
 
-		startYear = "2014"
-		startMonth = "08"
-		startDay =  "30"
-		startDate = startYear + "-" + startMonth + "-" + startDay
-		startDate = str(startDate)
+	  endYear = "2014"
+	  endMonth = "09"
+	  endDay =  "02"
+	  endDate = endYear + "-" + endMonth + "-" + endDay
+	  endDate = str(endDate)
 
-=======
-
-class MainHandler(webapp2.RequestHandler):
-
-		userId = "rezalution786"
-
-		startYear = "2014"
-		startMonth = "08"
-		startDay =  "30"
-		startDate = startYear + "-" + startMonth + "-" + startDay
-		startDate = str(startDate)
-
->>>>>>> origin/master
-		startHour = "00"
-		startMin =  "00"
-		startTimeParam = startHour + ":" + startMin
-		startTimeParam = str(startTimeParam)
-
-		endHour = "00"
-		endMin = "00"
-		endTime = endHour + ":" + endMin
-		endTime = str(endTime)
-
-		endYear = "2014"
-		endMonth = "09"
-		endDay =  "02"
-		endDate = endYear + "-" + endMonth + "-" + endDay
-		endDate = str(endDate)
-
-		googleSearch(userId, startTimeParam, startDate, endTime, endDate)
+	  googleSearch(userId, startTimeParam, startDate, endTime, endDate)
   
 app = webapp2.WSGIApplication(
 	[('/', MainHandler)], 
