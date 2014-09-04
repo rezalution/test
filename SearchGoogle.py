@@ -5,7 +5,6 @@ import os
 import sys
 import json
 import gflags
-import argparse
 from datetime import datetime
 from collections import namedtuple
 
