@@ -1,11 +1,10 @@
 import webapp2
-
 import imp
 import httplib2
 import os
 import sys
 import json
-#sys.path.remove('/usr/lib/python2.6/site-packages')
+
 #foo = imp.load_source('argparse.py', '/usr/lib/python2.6/site-packages/')
 import argparse
 from datetime import datetime
