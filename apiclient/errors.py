@@ -24,7 +24,7 @@ __author__ = 'jcgregorio@google.com (Joe Gregorio)'
 
 
 from oauth2client import util
-from oauth2client.anyjson import simplejson
+from oauth2client.anyjson import json
 
 
 class Error(Exception):
@@ -45,7 +45,7 @@ class HttpError(Error):
     """Calculate the reason for the error from the response content."""
     reason = self.resp.reason
     try:
-      data = simplejson.loads(self.content)
+      data = json.loads(self.content)
       reason = data['error']['message']
     except (ValueError, KeyError):
       pass
