@@ -17,9 +17,10 @@
 
 import base64
 import hashlib
-import json
 import logging
 import time
+
+from anyjson import simplejson
 
 
 CLOCK_SKEW_SECS = 300  # 5 minutes in seconds
@@ -36,6 +37,7 @@ class AppIdentityError(Exception):
 
 try:
   from OpenSSL import crypto
+
 
   class OpenSSLVerifier(object):
     """Verifies the signature on a message."""
@@ -123,11 +125,10 @@ try:
       Raises:
         OpenSSL.crypto.Error if the key can't be parsed.
       """
-      parsed_pem_key = _parse_pem_key(key)
-      if parsed_pem_key:
-        pkey = crypto.load_privatekey(crypto.FILETYPE_PEM, parsed_pem_key)
+      if key.startswith('-----BEGIN '):
+        pkey = crypto.load_privatekey(crypto.FILETYPE_PEM, key)
       else:
-        pkey = crypto.load_pkcs12(key, password.encode('utf8')).get_privatekey()
+        pkey = crypto.load_pkcs12(key, password).get_privatekey()
       return OpenSSLSigner(pkey)
 
 except ImportError:
@@ -229,12 +230,11 @@ try:
       Raises:
         NotImplementedError if they key isn't in PEM format.
       """
-      parsed_pem_key = _parse_pem_key(key)
-      if parsed_pem_key:
-        pkey = RSA.importKey(parsed_pem_key)
+      if key.startswith('-----BEGIN '):
+        pkey = RSA.importKey(key)
       else:
         raise NotImplementedError(
-            'PKCS12 format is not supported by the PyCrypto library. '
+            'PKCS12 format is not supported by the PyCrpto library. '
             'Try converting to a "PEM" '
             '(openssl pkcs12 -in xxxxx.p12 -nodes -nocerts > privatekey.pem) '
             'or using PyOpenSSL if native code is an option.')
@@ -256,24 +256,6 @@ else:
                     'PyOpenSSL, or PyCrypto 2.6 or later')
 
 
-def _parse_pem_key(raw_key_input):
-  """Identify and extract PEM keys.
-
-  Determines whether the given key is in the format of PEM key, and extracts
-  the relevant part of the key if it is.
-
-  Args:
-    raw_key_input: The contents of a private key file (either PEM or PKCS12).
-
-  Returns:
-    string, The actual key if the contents are from a PEM file, or else None.
-  """
-  offset = raw_key_input.find('-----BEGIN ')
-  if offset != -1:
-    return raw_key_input[offset:]
-  else:
-    return None
-
 def _urlsafe_b64encode(raw_bytes):
   return base64.urlsafe_b64encode(raw_bytes).rstrip('=')
 
@@ -286,7 +268,7 @@ def _urlsafe_b64decode(b64string):
 
 
 def _json_encode(data):
-  return json.dumps(data, separators = (',', ':'))
+  return simplejson.dumps(data, separators = (',', ':'))
 
 
 def make_signed_jwt(signer, payload):
@@ -336,8 +318,9 @@ def verify_signed_jwt_with_certs(jwt, certs, audience):
   """
   segments = jwt.split('.')
 
-  if len(segments) != 3:
-    raise AppIdentityError('Wrong number of segments in token: %s' % jwt)
+  if (len(segments) != 3):
+    raise AppIdentityError(
+      'Wrong number of segments in token: %s' % jwt)
   signed = '%s.%s' % (segments[0], segments[1])
 
   signature = _urlsafe_b64decode(segments[2])
@@ -345,15 +328,15 @@ def verify_signed_jwt_with_certs(jwt, certs, audience):
   # Parse token.
   json_body = _urlsafe_b64decode(segments[1])
   try:
-    parsed = json.loads(json_body)
+    parsed = simplejson.loads(json_body)
   except:
     raise AppIdentityError('Can\'t parse token: %s' % json_body)
 
   # Check signature.
   verified = False
-  for _, pem in certs.items():
+  for (keyname, pem) in certs.items():
     verifier = Verifier.from_string(pem, True)
-    if verifier.verify(signed, signature):
+    if (verifier.verify(signed, signature)):
       verified = True
       break
   if not verified:
@@ -371,15 +354,16 @@ def verify_signed_jwt_with_certs(jwt, certs, audience):
   if exp is None:
     raise AppIdentityError('No exp field in token: %s' % json_body)
   if exp >= now + MAX_TOKEN_LIFETIME_SECS:
-    raise AppIdentityError('exp field too far in future: %s' % json_body)
+    raise AppIdentityError(
+      'exp field too far in future: %s' % json_body)
   latest = exp + CLOCK_SKEW_SECS
 
   if now < earliest:
     raise AppIdentityError('Token used too early, %d < %d: %s' %
-                           (now, earliest, json_body))
+      (now, earliest, json_body))
   if now > latest:
     raise AppIdentityError('Token used too late, %d > %d: %s' %
-                           (now, latest, json_body))
+      (now, latest, json_body))
 
   # Check audience.
   if audience is not None:
@@ -388,6 +372,6 @@ def verify_signed_jwt_with_certs(jwt, certs, audience):
       raise AppIdentityError('No aud field in token: %s' % json_body)
     if aud != audience:
       raise AppIdentityError('Wrong recipient, %s != %s: %s' %
-                             (aud, audience, json_body))
+          (aud, audience, json_body))
 
   return parsed

@@ -19,11 +19,12 @@ Utilities for making it easier to use OAuth 2.0 on Google Compute Engine.
 
 __author__ = 'jcgregorio@google.com (Joe Gregorio)'
 
-import json
+import httplib2
 import logging
-import urllib
+import uritemplate
 
 from oauth2client import util
+from oauth2client.anyjson import simplejson
 from oauth2client.client import AccessTokenRefreshError
 from oauth2client.client import AssertionCredentials
 
@@ -56,14 +57,13 @@ class AppAssertionCredentials(AssertionCredentials):
         requested.
     """
     self.scope = util.scopes_to_string(scope)
-    self.kwargs = kwargs
 
     # Assertion type is no longer used, but still in the parent class signature.
     super(AppAssertionCredentials, self).__init__(None)
 
   @classmethod
-  def from_json(cls, json_data):
-    data = json.loads(json_data)
+  def from_json(cls, json):
+    data = simplejson.loads(json)
     return AppAssertionCredentials(data['scope'])
 
   def _refresh(self, http_request):
@@ -78,28 +78,13 @@ class AppAssertionCredentials(AssertionCredentials):
     Raises:
       AccessTokenRefreshError: When the refresh fails.
     """
-    query = '?scope=%s' % urllib.quote(self.scope, '')
-    uri = META.replace('{?scope}', query)
+    uri = uritemplate.expand(META, {'scope': self.scope})
     response, content = http_request(uri)
     if response.status == 200:
       try:
-        d = json.loads(content)
-      except StandardError as e:
+        d = simplejson.loads(content)
+      except StandardError, e:
         raise AccessTokenRefreshError(str(e))
       self.access_token = d['accessToken']
     else:
-      if response.status == 404:
-        content = content + (' This can occur if a VM was created'
-                             ' with no service account or scopes.')
       raise AccessTokenRefreshError(content)
-
-  @property
-  def serialization_data(self):
-    raise NotImplementedError(
-        'Cannot serialize credentials for GCE service accounts.')
-
-  def create_scoped_required(self):
-    return not self.scope
-
-  def create_scoped(self, scopes):
-    return AppAssertionCredentials(scopes, **self.kwargs)

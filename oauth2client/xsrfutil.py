@@ -17,13 +17,14 @@
 """Helper methods for creating & verifying XSRF tokens."""
 
 __authors__ = [
-    '"Doug Coker" <dcoker@google.com>',
-    '"Joe Gregorio" <jcgregorio@google.com>',
+  '"Doug Coker" <dcoker@google.com>',
+  '"Joe Gregorio" <jcgregorio@google.com>',
 ]
 
 
 import base64
 import hmac
+import os  # for urandom
 import time
 
 from oauth2client import util
