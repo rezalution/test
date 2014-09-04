@@ -24,7 +24,7 @@ __author__ = 'jcgregorio@google.com (Joe Gregorio)'
 
 
 from oauth2client import util
-from oauth2client.anyjson import json
+from oauth2client.json import json
 
 
 class Error(Exception):
