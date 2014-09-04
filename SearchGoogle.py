@@ -101,7 +101,7 @@ def googleSearch(userId, startTimeParam, startDate, endTime, endDate):
 'x-goog-meta-bar': 'bar',
 'x-goog-acl': 'public-read',
 'cache-control': 'public, max-age=6000',
-'content-disposition': 'attachment; filename=results.json'}))
+'content-disposition': 'attachment; filename=results.json'})
       f.write(events)
       f.close()
 		
