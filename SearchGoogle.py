@@ -29,8 +29,8 @@ FLAGS = gflags.FLAGS
 FLOW = OAuth2WebServerFlow(
 	client_id='867412132283-vk6grnslsq7uq3gsafe21v7f00blca5s.apps.googleusercontent.com',
 	client_secret='01JZVBwcrmbJexziXRC-XS8S',
-	scope='https://www.googleapis.com/auth/calendar',
-	user_agent='folkloric-alpha-692')
+	scope=['https://www.googleapis.com/auth/calendar','https://www.googleapis.com/auth/calendar.readonly',],
+	user_agent='folkloric-alpha-692/1')
 # 	
 # FLAGS.auth_local_webserver = False	
 # 	
@@ -52,7 +52,7 @@ def googleSearch(userId, startTimeParam, startDate, endTime, endDate):
   if credentials is None or credentials.invalid == True:
 	pass
 	
-  service = build(serviceName='calendar', version='v3', http=http,
+  service = build(serviceName='calendar', version='v3',
     developerKey='AIzaSyCc4hQRQIGTy5jIgF0ca4E1HafAKqO2CYQ')		
 
   try:
