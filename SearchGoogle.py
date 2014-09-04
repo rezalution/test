@@ -19,6 +19,7 @@ from oauth2client.client import OAuth2WebServerFlow
 from oauth2client.tools import run
 from google.appengine.ext import webapp
 from oauth2client.appengine import OAuth2Decorator
+from oauth2client import gce
 
 BusyBlock = namedtuple("BusyBlock", "year, month, day, startTime endTime")
 
