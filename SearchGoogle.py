@@ -85,11 +85,11 @@ def googleSearch(userId, startTimeParam, startDate, endTime, endDate):
         f.write(newData)
         f.close()
 
-      ld_writeDicts('results.json', events)
+      ld_writeDicts('/bucket/resultsjson/results.json', events)
 
       busyTimes = list()
 
-      with open("results.json") as json_file:
+      with open("/bucket/resultsjson/results.json") as json_file:
         json_data = json.load(json_file)
 
         i = -1
