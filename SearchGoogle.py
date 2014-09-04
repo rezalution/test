@@ -151,10 +151,11 @@ def googleSearch(userId, startTimeParam, startDate, endTime, endDate):
   return events
 
 #if __name__ == '__main__':
+
 class MainHandler(webapp2.RequestHandler):
 
-	  @decorator.oauth_required
-		def get(self):
+	@decorator.oauth_required
+	def get(self):
 		# Get the authorized Http object created by the decorator.
 		http = decorator.http()
 		# Call the service using the authorized Http object.
