@@ -95,17 +95,13 @@ def googleSearch(userId, startTimeParam, startDate, endTime, endDate):
 
 
       path = '/bucket/resultsjson/results.json'
-	  source = CloudStorage.read(path)
-	  source = source.decode('utf-8')
- 	  content = content.encode('utf-8')
-	  path = CloudStorage.normalize_path(path)
-	  file_obj = cls.open(path, mode='w')
-	  file_obj.write(events)
-	  file_obj.close()		
+      filename = '/bucket/resultsjson/results.json'
+      f = cloudstorage.open(filename,'w')
+      f.write(events)
+      f.close()
 		
-		
-	  filename = 'results.json'
-	  json_data = cloudstorage.open(filename).read()
+      f = cloudstorage.open(filename)
+      json_data = f.read()
 
         i = -1
         for items in json_data['items']:
