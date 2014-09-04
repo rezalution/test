@@ -22,30 +22,37 @@ from oauth2client.appengine import OAuth2Decorator
 
 BusyBlock = namedtuple("BusyBlock", "year, month, day, startTime endTime")
 
-decorator = appengine.OAuth2DecoratorFromClientSecrets(
-  'client_secrets.json',
-  scope='https://www.googleapis.com/auth/calendar')
+# decorator = appengine.OAuth2DecoratorFromClientSecrets(
+#   'client_secrets.json',
+#   scope='https://www.googleapis.com/auth/calendar')
+# 
+# FLAGS = gflags.FLAGS
+# 
+# FLOW = OAuth2WebServerFlow(
+# 	client_id='867412132283-vk6grnslsq7uq3gsafe21v7f00blca5s.apps.googleusercontent.com',
+# 	client_secret='01JZVBwcrmbJexziXRC-XS8S',
+# 	scope='https://www.googleapis.com/auth/calendar',
+# 	user_agent='folkloric-alpha-692')
+# 	
+# FLAGS.auth_local_webserver = False	
+# 	
+# storage = Storage('calendar.dat')
+# credentials = storage.get()
+# if credentials is None or credentials.invalid == True:
+# 	credentials = run(FLOW, storage)
+# 	
+# http = httplib2.Http()
+# http = credentials.authorize(http)
+# 
+# service = build(serviceName='calendar', version='v3', http=http,
+# 	developerKey='AIzaSyCc4hQRQIGTy5jIgF0ca4E1HafAKqO2CYQ')	
 
-FLAGS = gflags.FLAGS
-
-FLOW = OAuth2WebServerFlow(
+decorator = OAuth2Decorator(
 	client_id='867412132283-vk6grnslsq7uq3gsafe21v7f00blca5s.apps.googleusercontent.com',
 	client_secret='01JZVBwcrmbJexziXRC-XS8S',
-	scope='https://www.googleapis.com/auth/calendar',
-	user_agent='folkloric-alpha-692')
-	
-FLAGS.auth_local_webserver = False	
-	
-storage = Storage('calendar.dat')
-credentials = storage.get()
-if credentials is None or credentials.invalid == True:
-	credentials = run(FLOW, storage)
-	
-http = httplib2.Http()
-http = credentials.authorize(http)
+	scope='https://www.googleapis.com/auth/calendar')
 
-service = build(serviceName='calendar', version='v3', http=http,
-	developerKey='AIzaSyCc4hQRQIGTy5jIgF0ca4E1HafAKqO2CYQ')	
+service = build('calendar', 'v3')
 
 #def googleSearch(userId, startYear, endYear, startMonth, endMonth, startday, endDay, startTime, endTime):
 def googleSearch(userId, startTimeParam, startDate, endTime, endDate):
@@ -146,36 +153,39 @@ def googleSearch(userId, startTimeParam, startDate, endTime, endDate):
 #if __name__ == '__main__':
 class MainHandler(webapp2.RequestHandler):
 
-  @decorator.oauth_required
-  def get(self):
-      http = decorator.http()
-	  request = service.events().list(calendarId='primary')
+	  @decorator.oauth_required
+		def get(self):
+		# Get the authorized Http object created by the decorator.
+		http = decorator.http()
+		# Call the service using the authorized Http object.
+		request = service.events().list(calendarId='primary')
+		response = request.execute(http=http)
 
-	  userId = "rezalution786"
+		userId = "rezalution786"
 
-	  startYear = "2014"
-	  startMonth = "08"
-	  startDay =  "30"
-	  startDate = startYear + "-" + startMonth + "-" + startDay
-	  startDate = str(startDate)
+		startYear = "2014"
+		startMonth = "08"
+		startDay =  "30"
+		startDate = startYear + "-" + startMonth + "-" + startDay
+		startDate = str(startDate)
 
-	  startHour = "00"
-	  startMin =  "00"
-	  startTimeParam = startHour + ":" + startMin
-	  startTimeParam = str(startTimeParam)
+		startHour = "00"
+		startMin =  "00"
+		startTimeParam = startHour + ":" + startMin
+		startTimeParam = str(startTimeParam)
 
-	  endHour = "00"
-	  endMin = "00"
-	  endTime = endHour + ":" + endMin
-	  endTime = str(endTime)
+		endHour = "00"
+		endMin = "00"
+		endTime = endHour + ":" + endMin
+		endTime = str(endTime)
 
-	  endYear = "2014"
-	  endMonth = "09"
-	  endDay =  "02"
-	  endDate = endYear + "-" + endMonth + "-" + endDay
-	  endDate = str(endDate)
+		endYear = "2014"
+		endMonth = "09"
+		endDay =  "02"
+		endDate = endYear + "-" + endMonth + "-" + endDay
+		endDate = str(endDate)
 
-	  googleSearch(userId, startTimeParam, startDate, endTime, endDate)
+		googleSearch(userId, startTimeParam, startDate, endTime, endDate)
   
 application = webapp2.WSGIApplication(
 	[('/', MainHandler)], 
