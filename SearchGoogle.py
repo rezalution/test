@@ -95,7 +95,7 @@ def googleSearch(userId, startTimeParam, startDate, endTime, endDate):
 
 
       path = '/bucket/resultsjson/results.json'
-      filename = '/bucket/resultsjson/'
+      filename = '/bucket/resultsjson/results.json'
       f = cloudstorage.open(filename,'w', 'application/json',
 {'x-goog-meta-foo': 'foo',
 'x-goog-meta-bar': 'bar',
