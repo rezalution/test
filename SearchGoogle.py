@@ -20,6 +20,10 @@ from oauth2client.tools import run
 
 BusyBlock = namedtuple("BusyBlock", "year, month, day, startTime endTime")
 
+decorator = appengine.OAuth2DecoratorFromClientSecrets(
+  'client_secrets.json',
+  scope='https://www.googleapis.com/auth/calendar')
+
 FLAGS = gflags.FLAGS
 
 FLOW = OAuth2WebServerFlow(
@@ -139,33 +143,37 @@ def googleSearch(userId, startTimeParam, startDate, endTime, endDate):
 
 #if __name__ == '__main__':
 class MainHandler(webapp2.RequestHandler):
-  userId = "rezalution786"
 
-  startYear = "2014"
-  startMonth = "08"
-  startDay =  "30"
-  startDate = startYear + "-" + startMonth + "-" + startDay
-  startDate = str(startDate)
+  @decorator.oauth_required
+  def get(self):
+      http = decorator.http()
+	  request = service.events().list(calendarId='primary')
 
-  startHour = "00"
-  startMin =  "00"
-  startTimeParam = startHour + ":" + startMin
-  startTimeParam = str(startTimeParam)
+	  userId = "rezalution786"
 
-  endHour = "00"
-  endMin = "00"
-  endTime = endHour + ":" + endMin
-  endTime = str(endTime)
+	  startYear = "2014"
+	  startMonth = "08"
+	  startDay =  "30"
+	  startDate = startYear + "-" + startMonth + "-" + startDay
+	  startDate = str(startDate)
 
-  endYear = "2014"
-  endMonth = "09"
-  endDay =  "02"
-  endDate = endYear + "-" + endMonth + "-" + endDay
-  endDate = str(endDate)
+	  startHour = "00"
+	  startMin =  "00"
+	  startTimeParam = startHour + ":" + startMin
+	  startTimeParam = str(startTimeParam)
 
-  __init__(self)
-  init_service(self)
-  googleSearch(userId, startTimeParam, startDate, endTime, endDate)
+	  endHour = "00"
+	  endMin = "00"
+	  endTime = endHour + ":" + endMin
+	  endTime = str(endTime)
+
+	  endYear = "2014"
+	  endMonth = "09"
+	  endDay =  "02"
+	  endDate = endYear + "-" + endMonth + "-" + endDay
+	  endDate = str(endDate)
+
+	  googleSearch(userId, startTimeParam, startDate, endTime, endDate)
   
 application = webapp2.WSGIApplication(
 	[('/', MainHandler)], 
