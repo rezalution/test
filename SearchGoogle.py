@@ -18,32 +18,29 @@ from oauth2client.file import Storage
 from oauth2client.client import OAuth2WebServerFlow
 from oauth2client.tools import run
 
-FLAGS = gflags.FLAGS
-
 BusyBlock = namedtuple("BusyBlock", "year, month, day, startTime endTime")
 
-CLIENT_SECRETS = os.path.join(os.path.dirname(__file__), 'client_secrets.json')
+FLAGS = gflags.FLAGS
 
-def __init__(self):
-	self._service = None
-	self.init_service()
-def init_service(self):
-	if self._service:
-		return
-	storage = Storage('credentials.dat')
-	credentials = storage.get()
-	if not credentials or credentials.invalid:
-		parser = tools.argparser
-		flags = parser.parse_args([])
-	credentials = run_flow(flow, storage, flags)
-	http = httplib2.Http()
-	http = credentials.authorize(http)
-	self._service = build('calendar', 'v3', http=http)
+FLOW = OAuth2WebServerFlow(
+	client_id='867412132283-vk6grnslsq7uq3gsafe21v7f00blca5s.apps.googleusercontent.com',
+	client_secret='01JZVBwcrmbJexziXRC-XS8S',
+	scope='https://www.googleapis.com/auth/calendar',
+	user_agent='folkloric-alpha-692')
+	
+storage = Storage('calendar.dat')
+credentials = storage.get()
+if credentials is None or credentials.invalid == True:
+	credentials = run(FLOW, storage)
+	
+http = httplib2.Http()
+http = credentials.authorize(http)
+
+service = build(serviceName='calendar', version='v3', http=http,
+	developerKey='AIzaSyCc4hQRQIGTy5jIgF0ca4E1HafAKqO2CYQ')	
 
 #def googleSearch(userId, startYear, endYear, startMonth, endMonth, startday, endDay, startTime, endTime):
 def googleSearch(userId, startTimeParam, startDate, endTime, endDate):
-
-  global googleInit
 
   try:
 
