@@ -1,24 +1,24 @@
 import webapp2
+
 import imp
 import httplib2
 import os
 import sys
 import json
-import gflags
+#sys.path.remove('/usr/lib/python2.6/site-packages')
+#foo = imp.load_source('argparse.py', '/usr/lib/python2.6/site-packages/')
+import argparse
 from datetime import datetime
 from collections import namedtuple
-
-#from apiclient import discovery
+#import tzlocal
+#import pytz
 from apiclient.discovery import build
-#from oauth2client import file
-#from oauth2client import client
-from oauth2client import tools
 from oauth2client.file import Storage
-from oauth2client.client import OAuth2WebServerFlow
+from oauth2client import client
 from oauth2client.tools import run
-from google.appengine.ext import webapp
-from oauth2client.appengine import OAuth2Decorator
-from oauth2client import gce
+from oauth2client.client import OAuth2WebServerFlow
+import gflags
+
 
 BusyBlock = namedtuple("BusyBlock", "year, month, day, startTime endTime")
 
@@ -26,13 +26,13 @@ BusyBlock = namedtuple("BusyBlock", "year, month, day, startTime endTime")
 #   'client_secrets.json',
 #   scope='https://www.googleapis.com/auth/calendar')
 # 
-# FLAGS = gflags.FLAGS
-# 
-# FLOW = OAuth2WebServerFlow(
-# 	client_id='867412132283-vk6grnslsq7uq3gsafe21v7f00blca5s.apps.googleusercontent.com',
-# 	client_secret='01JZVBwcrmbJexziXRC-XS8S',
-# 	scope='https://www.googleapis.com/auth/calendar',
-# 	user_agent='folkloric-alpha-692')
+FLAGS = gflags.FLAGS
+
+FLOW = OAuth2WebServerFlow(
+	client_id='867412132283-vk6grnslsq7uq3gsafe21v7f00blca5s.apps.googleusercontent.com',
+	client_secret='01JZVBwcrmbJexziXRC-XS8S',
+	scope='https://www.googleapis.com/auth/calendar',
+	user_agent='folkloric-alpha-692')
 # 	
 # FLAGS.auth_local_webserver = False	
 # 	
@@ -56,6 +56,13 @@ service = build('calendar', 'v3')
 
 #def googleSearch(userId, startYear, endYear, startMonth, endMonth, startday, endDay, startTime, endTime):
 def googleSearch(userId, startTimeParam, startDate, endTime, endDate):
+  storage = Storage('calendar.dat')
+  credentials = storage.get()
+  if credentials is None or credentials.invalid == True:
+	pass
+	
+  service = build(serviceName='calendar', version='v3', http=http,
+    developerKey='AIzaSyCc4hQRQIGTy5jIgF0ca4E1HafAKqO2CYQ')		
 
   try:
 
@@ -153,14 +160,6 @@ def googleSearch(userId, startTimeParam, startDate, endTime, endDate):
 #if __name__ == '__main__':
 
 class MainHandler(webapp2.RequestHandler):
-
-	@decorator.oauth_required
-	def get(self):
-		# Get the authorized Http object created by the decorator.
-		http = decorator.http()
-		# Call the service using the authorized Http object.
-		request = service.events().list(calendarId='primary')
-		response = request.execute(http=http)
 
 		userId = "rezalution786"
 
