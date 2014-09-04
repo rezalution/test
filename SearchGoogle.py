@@ -5,8 +5,6 @@ import os
 import sys
 import json
 import gflags
-#sys.path.remove('/usr/lib/python2.6/site-packages')
-#foo = imp.load_source('argparse.py', '/usr/lib/python2.6/site-packages/')
 import argparse
 from datetime import datetime
 from collections import namedtuple
