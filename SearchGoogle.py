@@ -45,12 +45,6 @@ FLOW = OAuth2WebServerFlow(
 # service = build(serviceName='calendar', version='v3', http=http,
 # 	developerKey='AIzaSyCc4hQRQIGTy5jIgF0ca4E1HafAKqO2CYQ')	
 
-decorator = OAuth2Decorator(
-	client_id='867412132283-vk6grnslsq7uq3gsafe21v7f00blca5s.apps.googleusercontent.com',
-	client_secret='01JZVBwcrmbJexziXRC-XS8S',
-	scope='https://www.googleapis.com/auth/calendar')
-
-service = build('calendar', 'v3')
 
 def googleSearch(userId, startTimeParam, startDate, endTime, endDate):
   storage = Storage('calendar.dat')
