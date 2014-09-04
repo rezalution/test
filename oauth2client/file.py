@@ -21,10 +21,12 @@ credentials.
 __author__ = 'jcgregorio@google.com (Joe Gregorio)'
 
 import os
+import stat
 import threading
 
-from oauth2client.client import Storage as BaseStorage
-from oauth2client.client import Credentials
+from anyjson import simplejson
+from client import Storage as BaseStorage
+from client import Credentials
 
 
 class CredentialsFileSymbolicLinkError(Exception):

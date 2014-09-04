@@ -96,7 +96,7 @@ def run(flow, storage, http=None):
       try:
         httpd = ClientRedirectServer((FLAGS.auth_host_name, port),
                                      ClientRedirectHandler)
-      except socket.error as e:
+      except socket.error, e:
         pass
       else:
         success = True
@@ -150,7 +150,7 @@ def run(flow, storage, http=None):
 
   try:
     credential = flow.step2_exchange(code, http=http)
-  except client.FlowExchangeError as e:
+  except client.FlowExchangeError, e:
     sys.exit('Authentication has failed: %s' % e)
 
   storage.put(credential)
