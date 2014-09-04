@@ -61,7 +61,6 @@ def googleSearch(userId, startTimeParam, startDate, endTime, endDate):
       startTime = "startTime"
 
       try:
-		#when we get the events
 		#order by the start time, have it all as single events, min and max time are our parameters we put in
 		#also we are having it return in the time zone of the local machine, not useful for full day events but very helpful for datetime events
         events = service.events().list(calendarId=calendarID, pageToken=page_token, orderBy=startTime, singleEvents=True, timeMin=myStartTime, timeMax=myEndTime).execute()
