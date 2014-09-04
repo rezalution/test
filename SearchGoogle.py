@@ -103,8 +103,8 @@ def googleSearch(userId, startTimeParam, startDate, endTime, endDate):
       f = cloudstorage.open(filename)
       json_data = f.read()
 
-        i = -1
-        for items in json_data['items']:
+      i = -1
+      for items in json_data['items']:
             n = i
             i +=1
             for key, value in items.iteritems():
