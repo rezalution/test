@@ -28,6 +28,8 @@ FLOW = OAuth2WebServerFlow(
 	scope='https://www.googleapis.com/auth/calendar',
 	user_agent='folkloric-alpha-692')
 	
+FLAGS.auth_local_webserver = False	
+	
 storage = Storage('calendar.dat')
 credentials = storage.get()
 if credentials is None or credentials.invalid == True:
