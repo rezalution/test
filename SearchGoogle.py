@@ -52,7 +52,6 @@ decorator = OAuth2Decorator(
 
 service = build('calendar', 'v3')
 
-#def googleSearch(userId, startYear, endYear, startMonth, endMonth, startday, endDay, startTime, endTime):
 def googleSearch(userId, startTimeParam, startDate, endTime, endDate):
   storage = Storage('calendar.dat')
   credentials = storage.get()
