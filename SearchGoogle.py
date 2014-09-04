@@ -16,6 +16,7 @@ from oauth2client.file import Storage
 from oauth2client import client
 from oauth2client.tools import run
 <<<<<<< HEAD
+<<<<<<< HEAD
 from oauth2client import client
 =======
 from oauth2client.client import OAuth2WebServerFlow
@@ -33,6 +34,12 @@ import gflags
 #     ],
 #     message=tools.message_if_missing(CLIENT_SECRETS))
 =======
+=======
+from oauth2client.client import OAuth2WebServerFlow
+import gflags
+
+
+>>>>>>> origin/master
 BusyBlock = namedtuple("BusyBlock", "year, month, day, startTime endTime")
 
 # decorator = appengine.OAuth2DecoratorFromClientSecrets(
@@ -93,6 +100,7 @@ def getCalendarEvents(userID, startYear, startMonth, startDay, endYear, endMonth
 # service = build(serviceName='calendar', version='v3', http=http,
 # 	developerKey='AIzaSyCc4hQRQIGTy5jIgF0ca4E1HafAKqO2CYQ')	
 
+<<<<<<< HEAD
 >>>>>>> origin/master
 
 def googleSearch(userId, startTimeParam, startDate, endTime, endDate):
@@ -114,6 +122,10 @@ def googleSearch(userId, startTimeParam, startDate, endTime, endDate):
   service = build(serviceName='calendar', version='v3',
        developerKey='AIzaSyCInh7DEEH7Zv2H-htNy7o9Z_7ktqkWY1Q')
 =======
+=======
+
+def googleSearch(userId, startTimeParam, startDate, endTime, endDate):
+>>>>>>> origin/master
   storage = Storage('calendar.dat')
   credentials = storage.get()
   if credentials is None or credentials.invalid == True:
@@ -121,6 +133,9 @@ def googleSearch(userId, startTimeParam, startDate, endTime, endDate):
 	
   service = build(serviceName='calendar', version='v3',
     developerKey='AIzaSyCc4hQRQIGTy5jIgF0ca4E1HafAKqO2CYQ')		
+<<<<<<< HEAD
+>>>>>>> origin/master
+=======
 >>>>>>> origin/master
 
   try:
@@ -155,6 +170,7 @@ def googleSearch(userId, startTimeParam, startDate, endTime, endDate):
       newData = json.dumps(events)
 
 <<<<<<< HEAD
+<<<<<<< HEAD
       #ld_writeDicts(events)
 
       #busyTimes = list()
@@ -163,6 +179,8 @@ def googleSearch(userId, startTimeParam, startDate, endTime, endDate):
       #with json.loads(newData) as json_file:
       json_data = json.loads(newData)
 =======
+=======
+>>>>>>> origin/master
 #       def ld_writeDicts(filePath,events):
 #         f=open(filePath, 'w')
 #         newData = json.dumps(events,indent=4)
@@ -182,6 +200,9 @@ def googleSearch(userId, startTimeParam, startDate, endTime, endDate):
 		
       f = cloudstorage.open(filename, read_buffer_size=1)
       json_data = f.read()
+<<<<<<< HEAD
+>>>>>>> origin/master
+=======
 >>>>>>> origin/master
 
       i = -1
@@ -250,6 +271,7 @@ class MainHandler(webapp2.RequestHandler):
 =======
 
 #if __name__ == '__main__':
+<<<<<<< HEAD
 
 class MainHandler(webapp2.RequestHandler):
 
@@ -262,6 +284,19 @@ class MainHandler(webapp2.RequestHandler):
 		startDate = startYear + "-" + startMonth + "-" + startDay
 		startDate = str(startDate)
 
+=======
+
+class MainHandler(webapp2.RequestHandler):
+
+		userId = "rezalution786"
+
+		startYear = "2014"
+		startMonth = "08"
+		startDay =  "30"
+		startDate = startYear + "-" + startMonth + "-" + startDay
+		startDate = str(startDate)
+
+>>>>>>> origin/master
 		startHour = "00"
 		startMin =  "00"
 		startTimeParam = startHour + ":" + startMin
