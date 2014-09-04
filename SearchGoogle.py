@@ -4,6 +4,7 @@ import httplib2
 import os
 import sys
 import json
+import cloudstorage
 
 import argparse
 from datetime import datetime
@@ -79,18 +80,32 @@ def googleSearch(userId, startTimeParam, startDate, endTime, endDate):
 	    #when we get an error from the events return, normally meaning a bad onid id
         events = "NoID"
 
-      def ld_writeDicts(filePath,events):
-        f=open(filePath, 'w')
-        newData = json.dumps(events,indent=4)
-        f.write(newData)
-        f.close()
+#       def ld_writeDicts(filePath,events):
+#         f=open(filePath, 'w')
+#         newData = json.dumps(events,indent=4)
+#         f.write(newData)
+#         f.close()
+# 
+#       ld_writeDicts('/bucket/resultsjson/results.json', events)
+# 
+        busyTimes = list()
+# 
+#       with open("/bucket/resultsjson/results.json") as json_file:
+#         json_data = json.load(json_file)
 
-      ld_writeDicts('/bucket/resultsjson/results.json', events)
 
-      busyTimes = list()
-
-      with open("/bucket/resultsjson/results.json") as json_file:
-        json_data = json.load(json_file)
+		path = '/bucket/resultsjson/results.json'
+		source = CloudStorage.read(path)
+		source = source.decode('utf-8')
+ 		content = content.encode('utf-8')
+		path = CloudStorage.normalize_path(path)
+		file_obj = cls.open(path, mode='w')
+		file_obj.write(events)
+		file_obj.close()		
+		
+		
+		filename = 'results.json'
+		json_data = cloudstorage.open(filename).read()
 
         i = -1
         for items in json_data['items']:
